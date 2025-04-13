@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { Ship } from './ship.entity';
 import { CreateShipDto } from './dto/create-ship.dto';
 import { Users } from '../users/user.entity';
-import { Dock } from '../docks/dock.entity';
+import { Dock } from '../docks/entities/dock.entity';
 
 @Injectable()
 export class ShipsService {

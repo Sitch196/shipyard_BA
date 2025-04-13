@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocksService } from './docks.service';
 import { DocksController } from './docks.controller';
-import { Dock } from './dock.entity';
+import { Dock } from './entities/dock.entity';
 import { Users } from '../users/user.entity';
 
 @Module({

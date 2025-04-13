@@ -1,6 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Users } from '../users/user.entity';
-import { Dock } from '../docks/dock.entity';
+import { Dock } from '../docks/entities/dock.entity';
 
 @Entity()
 export class Ship {

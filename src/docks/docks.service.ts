@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Dock } from './dock.entity';
+import { Dock } from './entities/dock.entity';
 import { CreateDockDto } from './dto/create-dock.dto';
 import { Users } from '../users/user.entity';
 

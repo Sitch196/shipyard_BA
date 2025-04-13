@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { DocksService } from './docks.service';
 import { CreateDockDto } from './dto/create-dock.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('docks')
 export class DocksController {

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ShipsService } from './ships.service';
 import { CreateShipDto } from './dto/create-ship.dto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('ships')
 export class ShipsController {
