@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
@@ -10,31 +10,69 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findOneByEmail(email);
-    if (user && (await bcrypt.compare(pass, user.password))) {
-      const { password, ...result } = user;
-      return result;
+  async validateUser(email: string, plainTextPassword: string): Promise<any> {
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+      if (!user) {
+        return null;
+      }
+
+      const isPasswordValid = await bcrypt.compare(
+        plainTextPassword,
+        user.password,
+      );
+      console.log('Password validation result:', { email, isPasswordValid });
+
+      if (isPasswordValid) {
+        const { password, ...result } = user;
+        return result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Validation error:', error);
+      throw new UnauthorizedException('Invalid credentials');
     }
-    return null;
   }
 
   async login(user: any) {
-    const payload = {
-      email: user.email,
-      sub: user.id,
-      isShipyardOwner: user.isShipyardOwner,
-    };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    try {
+      const payload = {
+        email: user.email,
+        sub: user.id,
+        isShipyardOwner: user.isShipyardOwner,
+      };
+
+      return {
+        access_token: this.jwtService.sign(payload),
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          isShipyardOwner: user.isShipyardOwner,
+        },
+      };
+    } catch (error) {
+      console.error('Login error:', error);
+      throw new UnauthorizedException('Login failed');
+    }
   }
 
   async register(userData: any) {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    return this.usersService.create({
-      ...userData,
-      password: hashedPassword,
-    });
+    try {
+      const existingUser = await this.usersService.findOneByEmail(
+        userData.email,
+      );
+      if (existingUser) {
+        throw new UnauthorizedException('User already exists');
+      }
+
+      // Create new user with hashed password
+      const user = await this.usersService.create(userData);
+      const { password, ...result } = user;
+      return result;
+    } catch (error) {
+      console.error('Registration error:', error);
+      throw error;
+    }
   }
 }

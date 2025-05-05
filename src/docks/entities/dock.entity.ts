@@ -5,8 +5,8 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { Users } from '../users/user.entity';
-import { Ship } from '../ships/ship.entity';
+import { Users } from '../../users/user.entity';
+import { Ship } from '../../ships/ship.entity';
 
 @Entity()
 export class Dock {

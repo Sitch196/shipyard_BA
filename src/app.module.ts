@@ -17,7 +17,7 @@ import { NotificationsModule } from './notifications/notifications.module';
       database: 'postgres',
       autoLoadEntities: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // disable in production
+      synchronize: true,
     }),
     AuthModule,
     UsersModule,
