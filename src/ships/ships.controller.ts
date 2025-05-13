@@ -17,7 +17,7 @@ export class ShipsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createShipDto: CreateShipDto, @Request() req) {
-    return this.shipsService.create(createShipDto, req.user);
+    return this.shipsService.create(createShipDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -26,6 +26,5 @@ export class ShipsController {
     if (req.user.isShipyardOwner) {
       return this.shipsService.findAll();
     }
-    return this.shipsService.findByCaptain(req.user.id);
   }
 }
