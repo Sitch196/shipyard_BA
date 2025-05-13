@@ -2,6 +2,11 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import {
+  UserDto,
+  LoginResponseDto,
+  JwtPayloadDto,
+} from '../shared/dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -10,7 +15,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, plainTextPassword: string): Promise<any> {
+  async validateUser(
+    email: string,
+    plainTextPassword: string,
+  ): Promise<UserDto | null> {
     try {
       const user = await this.usersService.findOneByEmail(email);
       if (!user) {
@@ -33,9 +41,9 @@ export class AuthService {
     }
   }
 
-  async login(user: any) {
+  async login(user: UserDto): Promise<LoginResponseDto> {
     try {
-      const payload = {
+      const payload: JwtPayloadDto = {
         email: user.email,
         sub: user.id,
         isShipyardOwner: user.isShipyardOwner,
@@ -52,7 +60,7 @@ export class AuthService {
       };
     } catch (error) {
       console.error('Login error:', error);
-      throw new UnauthorizedException('Login failed');
+      throw new UnauthorizedException('Failed to generate token');
     }
   }
 

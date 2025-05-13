@@ -2,46 +2,70 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ship } from './ship.entity';
-import { CreateShipDto } from './dto/create-ship.dto';
-import { Users } from '../users/user.entity';
-import { Dock } from '../docks/entities/dock.entity';
+import { CreateShipDto, ShipDto, toShipDto } from '../shared/dto/ship.dto';
+import { handleServiceError } from '../shared/utils/error-handling';
 
 @Injectable()
 export class ShipsService {
   constructor(
     @InjectRepository(Ship)
     private shipsRepository: Repository<Ship>,
-    @InjectRepository(Dock)
-    private docksRepository: Repository<Dock>,
   ) {}
 
-  async create(createShipDto: CreateShipDto, captain: Users): Promise<Ship> {
-    const dock = await this.docksRepository.findOne({
-      where: { id: createShipDto.dockId },
-    });
-
-    if (!dock) {
-      throw new Error('Dock not found');
+  async create(createShipDto: CreateShipDto): Promise<ShipDto | never> {
+    try {
+      const ship = this.shipsRepository.create(createShipDto);
+      const savedShip = await this.shipsRepository.save(ship);
+      return toShipDto(savedShip);
+    } catch (error) {
+      return handleServiceError(error, 'Failed to create ship');
     }
-
-    const ship = this.shipsRepository.create({
-      ...createShipDto,
-      captain,
-      currentDock: dock,
-      dockedAt: new Date(),
-    });
-
-    return this.shipsRepository.save(ship);
   }
 
-  async findAll(): Promise<Ship[]> {
-    return this.shipsRepository.find({ relations: ['captain', 'currentDock'] });
+  async findAll(): Promise<ShipDto[] | never> {
+    try {
+      const ships = await this.shipsRepository.find();
+      return ships.map(toShipDto);
+    } catch (error) {
+      return handleServiceError(error, 'Failed to fetch ships');
+    }
   }
 
-  async findByCaptain(captainId: number): Promise<Ship[]> {
-    return this.shipsRepository.find({
-      where: { captain: { id: captainId } },
-      relations: ['currentDock'],
-    });
+  async findOne(id: number): Promise<ShipDto | never> {
+    try {
+      const ship = await this.shipsRepository.findOneOrFail({ where: { id } });
+      return toShipDto(ship);
+    } catch (error) {
+      return handleServiceError(error, `Ship with ID ${id} not found`);
+    }
+  }
+
+  async update(
+    id: number,
+    updateShipDto: Partial<CreateShipDto>,
+  ): Promise<ShipDto | never> {
+    try {
+      await this.shipsRepository.update(id, updateShipDto);
+      const updatedShip = await this.shipsRepository.findOneOrFail({
+        where: { id },
+      });
+      return toShipDto(updatedShip);
+    } catch (error) {
+      return handleServiceError(error, `Failed to update ship with ID ${id}`);
+    }
+  }
+
+  async remove(id: number): Promise<void | never> {
+    try {
+      const result = await this.shipsRepository.delete(id);
+      if (result.affected === 0) {
+        return handleServiceError(
+          new Error(`Ship with ID ${id} not found`),
+          '',
+        );
+      }
+    } catch (error) {
+      return handleServiceError(error, `Failed to delete ship with ID ${id}`);
+    }
   }
 }
