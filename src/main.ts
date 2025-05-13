@@ -6,8 +6,23 @@ dotenv.config({ path: './.env' });
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  const allowedOrigins = [
+    'https://shipyard-fe.onrender.com',
+    'http://localhost:5173',
+  ];
+
   app.enableCors({
-    origin: [process.env.CORS_ORIGIN, 'http://localhost:5173'],
+    origin: (
+      origin: string,
+      callback: (arg0: Error | null, arg1: boolean | undefined) => void,
+    ) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'), false);
+      }
+    },
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     allowedHeaders: 'Content-Type, Accept, Authorization',

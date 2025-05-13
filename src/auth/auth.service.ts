@@ -21,7 +21,6 @@ export class AuthService {
         plainTextPassword,
         user.password,
       );
-      console.log('Password validation result:', { email, isPasswordValid });
 
       if (isPasswordValid) {
         const { password, ...result } = user;
