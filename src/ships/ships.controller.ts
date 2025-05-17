@@ -23,8 +23,6 @@ export class ShipsController {
   @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Request() req) {
-    if (req.user.isShipyardOwner) {
-      return this.shipsService.findAll();
-    }
+    return this.shipsService.findAll();
   }
 }

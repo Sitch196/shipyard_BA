@@ -5,7 +5,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ShipsModule } from './ships/ships.module';
 import { DocksModule } from './docks/docks.module';
-import { NotificationsModule } from './notifications/notifications.module';
 import { Users } from './users/user.entity';
 import { Ship } from './ships/ship.entity';
 import { Dock } from './docks/entities/dock.entity';
@@ -48,7 +47,6 @@ import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConne
     UsersModule,
     ShipsModule,
     DocksModule,
-    NotificationsModule,
   ],
 })
 export class AppModule {}
